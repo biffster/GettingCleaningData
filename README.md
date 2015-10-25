@@ -63,7 +63,8 @@ Michael Fierro (mifierro@cisco.com, Signature track)<br>October 25, 2015
 - BodyAccelerationYAxisstddev   : num
 - BodyAccelerationZAxisstddev   : num
 - BodyAccelByActivity - data.frame containing the mean of each measurement for the Body Acceleration measurements
-- Variables related to the Body Acceleration measurements
+
+### Variables related to the Body Acceleration measurements
 - GravityAccelerationXAxisMean  : num
 - GravityAccelerationYAxisMean  : num
 - GravityAccelerationZAxisMean  : num
@@ -71,7 +72,8 @@ Michael Fierro (mifierro@cisco.com, Signature track)<br>October 25, 2015
 - GravityAccelerationYAxisstddev: num
 - GravityAccelerationZAxisstddev: num
 - GravityAccelByActivity - data.frame containing the mean of each measurement for the Gravity Acceleration measurements
-- Variables related to the Body Acceleration measurements
+
+### Variables related to the Body Acceleration measurements
 - BodyJerkXAxisMean             : num
 - BodyJerkYAxisMean             : num
 - BodyJerkZAxisMean             : num
@@ -79,7 +81,8 @@ Michael Fierro (mifierro@cisco.com, Signature track)<br>October 25, 2015
 - BodyJerkYAxisstddev           : num
 - BodyJerkZAxisstddev           : num
 - BodyJerkByActivity - data.frame containing the mean of each measurement for the Body Jerk measurements
-- Variables related to the Body Acceleration measurements
+
+### Variables related to the Body Acceleration measurements
 - BodyGyroscopeXAxisMean        : num
 - BodyGyroscopeYAxisMean        : num
 - BodyGyroscopeZAxisMean        : num
