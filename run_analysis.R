@@ -43,11 +43,28 @@ colnames(testdata) <- newcolnames
 mergeddata <- rbind(traindata,testdata)
 
 # Set up file connection and write the results to disk
-zz <- file("output.txt", "w")
+zz <- file("fierro.txt", "w")
 write.table(mergeddata, quote=FALSE, row.name=FALSE, sep="\t", file=zz)
 close(zz)
 
-MeanBodyAccelByActivity <- ddply(mergeddata,"Activity", summarize, "BodyAccelerationXAxisMean"=mean(BodyAccelerationXAxisMean),"BodyAccelerationYAxisMean"=mean(BodyAccelerationYAxisMean),"BodyAccelerationZAxisMean"=mean(BodyAccelerationZAxisMean))
-MeanGravityAccelByActivity <- ddply(mergeddata,"Activity", summarize, "GravityAccelerationXAxisMean"=mean(GravityAccelerationXAxisMean),"GravityAccelerationYAxisMean"=mean(GravityAccelerationYAxisMean),"GravityAccelerationZAxisMean"=mean(GravityAccelerationZAxisMean))
-MeanBodyJerkByActivity <- ddply(mergeddata,"Activity", summarize, "BodyJerkXAxisMean"=mean(BodyJerkXAxisMean),"BodyJerkYAxisMean"=mean(BodyJerkYAxisMean),"BodyJerkZAxisMean"=mean(BodyJerkZAxisMean))
-MeanBodyGyroByActivity <- ddply(mergeddata,"Activity", summarize, "BodyGyroscopeXAxisMean"=mean(BodyGyroscopeXAxisMean),"BodyGyroscopeYAxisMean"=mean(BodyGyroscopeYAxisMean),"BodyGyroscopeZAxisMean"=mean(BodyGyroscopeZAxisMean))
+yy <- file("BodyAccel.txt", "w")
+BodyAccelByActivity <- ddply(mergeddata,"Activity", summarize, "BodyAccelerationXAxisMean"=mean(BodyAccelerationXAxisMean),"BodyAccelerationYAxisMean"=mean(BodyAccelerationYAxisMean),"BodyAccelerationZAxisMean"=mean(BodyAccelerationZAxisMean), "BodyAccelerationXAxisstddev" =mean(BodyAccelerationXAxisstddev),"BodyAccelerationYAxisstddev"=mean(BodyAccelerationYAxisstddev ),"BodyAccelerationZAxisstddev"=mean(BodyAccelerationZAxisstddev))
+write.table(BodyAccelByActivity, row.name=FALSE, sep="\t", file=yy)
+#write.table(stddevBodyAccelByActivity, row.name=FALSE, sep="\t", file=yy)
+close(yy)
+
+xx <- file("GravityAccel.txt", "w")
+GravityAccelByActivity <- ddply(mergeddata,"Activity", summarize, "GravityAccelerationXAxisMean"=mean(GravityAccelerationXAxisMean),"GravityAccelerationYAxisMean"=mean(GravityAccelerationYAxisMean),"GravityAccelerationZAxisMean"=mean(GravityAccelerationZAxisMean), "GravityAccelerationXAxisstddev" =mean(GravityAccelerationXAxisstddev),"GravityAccelerationYAxisstddev"=mean(GravityAccelerationYAxisstddev),"GravityAccelerationZAxisstddev"=mean(GravityAccelerationZAxisstddev))
+write.table(MeanGravityAccelByActivity, row.name=FALSE, sep="\t", file=yy)
+close(xx)
+
+ww <- file("BodyJerk.txt", "w")
+BodyJerkByActivity <- ddply(mergeddata,"Activity", summarize, "BodyJerkXAxisMean"=mean(BodyJerkXAxisMean),"BodyJerkYAxisMean"=mean(BodyJerkYAxisMean),"BodyJerkZAxisMean"=mean(BodyJerkZAxisMean), "BodyJerkXAxisstddev"=mean(BodyJerkXAxisstddev),"BodyJerkYAxisstddev"=mean(BodyJerkYAxisstddev),"BodyJerkZAxisstddev"=mean(BodyJerkZAxisstddev))
+write.table(BodyJerkByActivity, row.name=FALSE, sep="\t", file=yy)
+close(ww)
+
+vv <- file("BodyGyro.txt", "w")
+MeanBodyGyroByActivity <- ddply(mergeddata,"Activity", summarize, "BodyGyroscopeXAxisMean"=mean(BodyGyroscopeXAxisMean),"BodyGyroscopeYAxisMean"=mean(BodyGyroscopeYAxisMean),"BodyGyroscopeZAxisMean"=mean(BodyGyroscopeZAxisMean), "BodyGyroscopeXAxisstddev" =mean(BodyGyroscopeXAxisstddev),"BodyGyroscopeYAxisstddev"=mean(BodyGyroscopeYAxisstddev),"BodyGyroscopeZAxisstddev"=mean(BodyGyroscopeZAxisstddev))
+write.table(MeanBodyGyroByActivity, row.name=FALSE, sep="\t", file=yy)
+close(vv)
+
