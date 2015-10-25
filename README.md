@@ -2,7 +2,7 @@
 Michael Fierro (mifierro@cisco.com, Signature track)<br>October 25, 2015
 
 ## Project Assumptions
-- I made a few assumptions and personifications for this class project. I will list these here:
+- I made a few assumptions and personifications for this class project. I will list these here:
 - Personification:
   - I only pulled out the first four groups of columns from the original dataset. This is enough data to prove that my script works and provides accurate tidy data; any more than this for a class project seems extraneous.
   - For Step 5 in the class project definition, I decided to output one file for each set of data. This choice was made assuming that future researchers may want only a subset of the data available. Providing separate files seems to be a tidier format for the data. The files are:
@@ -23,34 +23,27 @@ Michael Fierro (mifierro@cisco.com, Signature track)<br>October 25, 2015
     - library(plyr)
 
 ## Project Workflow
-- Create data tables from the data set text files:  
+1. Create data tables from the data set text files:  
   - vnames <- read.table("features.txt", header=FALSE)
-  - trainxvalraw <- read.table("train/X_train.txt", header=FALSE)
+   trainxvalraw <- read.table("train/X_train.txt", header=FALSE)
   - trainyvalraw <- read.table("train/y_train.txt", header=FALSE)
   - testxvalraw <- read.table("test/X_test.txt", header=FALSE)
   - testyvalraw <- read.table("test/y_test.txt", header=FALSE)
-
-- Set up constant values used during the script's run
+2. Set up constant values used during the script's run
   - needcols <- c(1:6, 41:46, 81:86, 121:126), the columns that will be processed
   - colnames(trainyvalraw) <- "activity", the column name for the Activity field
-
-- Set up lookup table and use this to get the column names
+3. Set up lookup table and use this to get the column names
   - colnames <-  join(testyvalraw,lookup,by="activity")
-
-- Merge column names
+4. Merge column names
   - colnames(data) <- newcolnames
-
-- Merge activities onto the data
+5. Merge activities onto the data
   - data <- cbind(trainydata, trainxdata)
-
-- Create the master merge data, ready to export
+6. Create the master merge data, ready to export
   - mergeddata <- rbind(traindata,testdata)
-
-- Write out the master merge file (fierro.txt)
+7. Write out the master merge file (fierro.txt)
   - write.table(mergeddata, row.name=FALSE)
-
-- Step 5 from the class project assignment: calculate the mean of each column per each activity per each subject.
-- Write those dataframes to disk
+8.  Step 5 from the class project assignment: calculate the mean of each column per each activity per each subject.
+9. Write those dataframes to disk
 
 ## Variables in the tidy dataset:
 ### Global variable to label the type of activity being measured
@@ -62,7 +55,7 @@ Michael Fierro (mifierro@cisco.com, Signature track)<br>October 25, 2015
 - BodyAccelerationXAxisstddev   : num
 - BodyAccelerationYAxisstddev   : num
 - BodyAccelerationZAxisstddev   : num
-- BodyAccelByActivity - data.frame containing the mean of each measurement for the Body Acceleration measurements
+- BodyAccelByActivity - data.frame containing the mean of each measurement for the Body Acceleration measurements
 
 ### Variables related to the Body Acceleration measurements
 - GravityAccelerationXAxisMean  : num
@@ -93,7 +86,7 @@ Michael Fierro (mifierro@cisco.com, Signature track)<br>October 25, 2015
 
 ## Filenames:
 ### Provided from dataset:
-- features.txt
+- features.txt
 - train/X_train.txt
 - train/y_train.txt
 - test/X_test.txt
@@ -101,7 +94,7 @@ Michael Fierro (mifierro@cisco.com, Signature track)<br>October 25, 2015
 
 ### Generated via run_analysis.R
 - fierro.txt - Merged Data
-- BodyAccel.txt - BodyAccelByActivity written to text
+- BodyAccel.txt - BodyAccelByActivity written to text
 - GravityAccel.txt - GravityAccelByActivity written to text
 - BodyJerk.txt - BodyJerkByActivity written to text
 - BodyGyro.txt - MeanBodyGyroByActivity written to text
