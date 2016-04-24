@@ -1,100 +1,114 @@
-# Getting and cleaning data - class project
-Michael Fierro (mifierro@cisco.com, Signature track)<br>October 25, 2015
+## Introduction
 
-## Project Assumptions
-- I made a few assumptions and personifications for this class project. I will list these here:
-- Personification:
-  - I only pulled out the first four groups of columns from the original dataset. This is enough data to prove that my script works and provides accurate tidy data; any more than this for a class project seems extraneous.
-  - For Step 5 in the class project definition, I decided to output one file for each set of data. This choice was made assuming that future researchers may want only a subset of the data available. Providing separate files seems to be a tidier format for the data. The files are:
-    1. BodyAccel.txt
-    2. BodyGyro.txt
-    3. BodyJerk.txt
-    4. GravityAccel.txt
+This assignment uses data from
+the <a href="http://archive.ics.uci.edu/ml/">UC Irvine Machine
+Learning Repository</a>, a popular repository for machine learning
+datasets. In particular, we will be using the "Individual household
+electric power consumption Data Set" which I have made available on
+the course web site:
 
-- Assumptions
-  - Paths will be set up as they are on my system. Assuming that the data set archive was extracted into R's working directory, the paths would be:
-    - features.txt in the working directory
-    - test/ contains the test data files
-    - train/ contains the train data files
-    - all output is written to the working directory
 
-  - The following libraries need to be loaded:
-    - library(dplyr)
-    - library(plyr)
+* <b>Dataset</b>: <a href="https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip">Electric power consumption</a> [20Mb]
 
-## Project Workflow
-1. Create data tables from the data set text files:  
-  - vnames <- read.table("features.txt", header=FALSE)
-   trainxvalraw <- read.table("train/X_train.txt", header=FALSE)
-  - trainyvalraw <- read.table("train/y_train.txt", header=FALSE)
-  - testxvalraw <- read.table("test/X_test.txt", header=FALSE)
-  - testyvalraw <- read.table("test/y_test.txt", header=FALSE)
-2. Set up constant values used during the script's run
-  - needcols <- c(1:6, 41:46, 81:86, 121:126), the columns that will be processed
-  - colnames(trainyvalraw) <- "activity", the column name for the Activity field
-3. Set up lookup table and use this to get the column names
-  - colnames <-  join(testyvalraw,lookup,by="activity")
-4. Merge column names
-  - colnames(data) <- newcolnames
-5. Merge activities onto the data
-  - data <- cbind(trainydata, trainxdata)
-6. Create the master merge data, ready to export
-  - mergeddata <- rbind(traindata,testdata)
-7. Write out the master merge file (fierro.txt)
-  - write.table(mergeddata, row.name=FALSE)
-8.  Step 5 from the class project assignment: calculate the mean of each column per each activity per each subject.
-9. Write those dataframes to disk
+* <b>Description</b>: Measurements of electric power consumption in
+one household with a one-minute sampling rate over a period of almost
+4 years. Different electrical quantities and some sub-metering values
+are available.
 
-## Variables in the tidy dataset:
-### Global variable to label the type of activity being measured
-- Activity                      : factor
-- Variables related to the Body Acceleration measurements
-- BodyAccelerationXAxisMean     : num
-- BodyAccelerationYAxisMean     : num
-- BodyAccelerationZAxisMean     : num
-- BodyAccelerationXAxisstddev   : num
-- BodyAccelerationYAxisstddev   : num
-- BodyAccelerationZAxisstddev   : num
-- BodyAccelByActivity - data.frame containing the mean of each measurement for the Body Acceleration measurements
 
-### Variables related to the Body Acceleration measurements
-- GravityAccelerationXAxisMean  : num
-- GravityAccelerationYAxisMean  : num
-- GravityAccelerationZAxisMean  : num
-- GravityAccelerationXAxisstddev: num
-- GravityAccelerationYAxisstddev: num
-- GravityAccelerationZAxisstddev: num
-- GravityAccelByActivity - data.frame containing the mean of each measurement for the Gravity Acceleration measurements
+The following descriptions of the 9 variables in the dataset are taken
+from
+the <a href="https://archive.ics.uci.edu/ml/datasets/Individual+household+electric+power+consumption">UCI
+web site</a>:
 
-### Variables related to the Body Acceleration measurements
-- BodyJerkXAxisMean             : num
-- BodyJerkYAxisMean             : num
-- BodyJerkZAxisMean             : num
-- BodyJerkXAxisstddev           : num
-- BodyJerkYAxisstddev           : num
-- BodyJerkZAxisstddev           : num
-- BodyJerkByActivity - data.frame containing the mean of each measurement for the Body Jerk measurements
+<ol>
+<li><b>Date</b>: Date in format dd/mm/yyyy </li>
+<li><b>Time</b>: time in format hh:mm:ss </li>
+<li><b>Global_active_power</b>: household global minute-averaged active power (in kilowatt) </li>
+<li><b>Global_reactive_power</b>: household global minute-averaged reactive power (in kilowatt) </li>
+<li><b>Voltage</b>: minute-averaged voltage (in volt) </li>
+<li><b>Global_intensity</b>: household global minute-averaged current intensity (in ampere) </li>
+<li><b>Sub_metering_1</b>: energy sub-metering No. 1 (in watt-hour of active energy). It corresponds to the kitchen, containing mainly a dishwasher, an oven and a microwave (hot plates are not electric but gas powered). </li>
+<li><b>Sub_metering_2</b>: energy sub-metering No. 2 (in watt-hour of active energy). It corresponds to the laundry room, containing a washing-machine, a tumble-drier, a refrigerator and a light. </li>
+<li><b>Sub_metering_3</b>: energy sub-metering No. 3 (in watt-hour of active energy). It corresponds to an electric water-heater and an air-conditioner.</li>
+</ol>
 
-### Variables related to the Body Acceleration measurements
-- BodyGyroscopeXAxisMean        : num
-- BodyGyroscopeYAxisMean        : num
-- BodyGyroscopeZAxisMean        : num
-- BodyGyroscopeXAxisstddev      : num
-- BodyGyroscopeYAxisstddev      : num
-- BodyGyroscopeZAxisstddev      : num
-- MeanBodyGyroByActivity - data.frame containing the mean of each measurement for the Body Gyroscope measurements
+## Loading the data
 
-## Filenames:
-### Provided from dataset:
-- features.txt
-- train/X_train.txt
-- train/y_train.txt
-- test/X_test.txt
-- test/y_test.txt
 
-### Generated via run_analysis.R
-- fierro.txt - Merged Data
-- BodyAccel.txt - BodyAccelByActivity written to text
-- GravityAccel.txt - GravityAccelByActivity written to text
-- BodyJerk.txt - BodyJerkByActivity written to text
-- BodyGyro.txt - MeanBodyGyroByActivity written to text
+
+
+
+When loading the dataset into R, please consider the following:
+
+* The dataset has 2,075,259 rows and 9 columns. First
+calculate a rough estimate of how much memory the dataset will require
+in memory before reading into R. Make sure your computer has enough
+memory (most modern computers should be fine).
+
+* We will only be using data from the dates 2007-02-01 and
+2007-02-02. One alternative is to read the data from just those dates
+rather than reading in the entire dataset and subsetting to those
+dates.
+
+* You may find it useful to convert the Date and Time variables to
+Date/Time classes in R using the `strptime()` and `as.Date()`
+functions.
+
+* Note that in this dataset missing values are coded as `?`.
+
+
+## Making Plots
+
+Our overall goal here is simply to examine how household energy usage
+varies over a 2-day period in February, 2007. Your task is to
+reconstruct the following plots below, all of which were constructed
+using the base plotting system.
+
+First you will need to fork and clone the following GitHub repository:
+[https://github.com/rdpeng/ExData_Plotting1](https://github.com/rdpeng/ExData_Plotting1)
+
+
+For each plot you should
+
+* Construct the plot and save it to a PNG file with a width of 480
+pixels and a height of 480 pixels.
+
+* Name each of the plot files as `plot1.png`, `plot2.png`, etc.
+
+* Create a separate R code file (`plot1.R`, `plot2.R`, etc.) that
+constructs the corresponding plot, i.e. code in `plot1.R` constructs
+the `plot1.png` plot. Your code file **should include code for reading
+the data** so that the plot can be fully reproduced. You should also
+include the code that creates the PNG file.
+
+* Add the PNG file and R code file to your git repository
+
+When you are finished with the assignment, push your git repository to
+GitHub so that the GitHub version of your repository is up to
+date. There should be four PNG files and four R code files.
+
+
+The four plots that you will need to construct are shown below. 
+
+
+### Plot 1
+
+
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
+
+
+### Plot 2
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
+
+
+### Plot 3
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+
+
+### Plot 4
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+
