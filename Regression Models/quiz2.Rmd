@@ -1,0 +1,78 @@
+---
+title: "Regression models Quiz 2"
+author: "Michael Fierro"
+date: "May 15, 2016"
+output: html_document
+---
+
+Quiz 2, since I had such a hard time figuring out most of the problems, I will preserve the quiz in R Markdown! Maybe someday I'll actually be able to use it.
+
+#### Question 1
+Using the contrived datasets below, give a P-value for the two sided hypothesis test of whether **β1** from a linear regression model is 0 or not. (Answer is in Pr(>|t|) in the x row)
+```{r question_1}
+x <- c(0.61, 0.93, 0.83, 0.35, 0.54, 0.16, 0.91, 0.62, 0.62)
+y <- c(0.67, 0.84, 0.6, 0.18, 0.85, 0.47, 1.1, 0.65, 0.36)
+summary(lm(y ~ x))$coef
+```
+  
+  
+#### Question 2
+Consider the previous problem, give the estimate of the residual standard deviation.
+```{r question_2}
+summary(lm(y ~ x))$sigma
+```
+*Note: I had no idea that $sigma even existed!*
+  
+  
+#### Question 3
+In the **mtcars** data set, fit a linear regression model of weight (predictor) on mpg (outcome). Get a 95% confidence interval for the expected mpg at the average weight. What is the lower endpoint?
+```{r question_3}
+# This is fitted, so the mean needs to be subtracted
+fit = lm(mpg ~ I(wt - mean(wt)), data=mtcars)
+# The question asks to predict at the **average weight**, so we need the mean of the weight field
+m = mean(mtcars$wt)
+# At this point, it's easy to use predict to find the answer
+predict(fit, newdata=data.frame(wt=m), interval="confidence")
+```
+  
+  
+#### Question 4
+Refer to the previous question. Read the help file for mtcars. What is the weight coefficient interpreted as?
+*The estimated expected change in mpg per 1,000 lb increase in weight.*
+
+#### Question 5
+Consider again the **mtcars** data set and a linear regression model with mpg as predicted by weight (1,000 lbs). A new car is coming weighing 3000 pounds. Construct a 95% prediction interval for its mpg. What is the upper endpoint?
+```{r question_5}
+unfit = lm(mpg ~ wt, data=mtcars)
+predict(unfit, newdata=data.frame(wt=3), interval="prediction")
+```
+
+#### Question 6
+Consider again the **mtcars** data set and a linear regression model with mpg as predicted by weight (in 1,000 lbs). A “short” ton is defined as 2,000 lbs. Construct a 95% confidence interval for the expected change in mpg per 1 short ton increase in weight. Give the lower endpoint.
+```{r question_6}
+fit <- lm(mpg ~ wt, data = mtcars)
+# Simply get the Confidence Interval and double it! (confint(fit)) gives low and high confidence interval for both Intecept and Weight. confint((fit))[2,] breaks out the values for the wt, and the *2 doubles it (both low and high) 
+confint(fit)[2, ] * 2
+```
+
+#### Question 7
+If my X from a linear regression is measured in centimeters and I convert it to meters what would happen to the slope coefficient?
+*Answer: Multiplied by 100*
+
+#### Question 8
+I have an outcome, **Y**, and a predictor, **X** and fit a linear regression model with **Y=β0+β1X+ϵ** to obtain **β^0** and **β^1**. What would be the consequence to the subsequent slope and intercept if I were to refit the model with a new regressor,**X+c** for some constant,**c**?
+*Answer: The new intercept would be β^0−cβ^1*
+
+#### Question 9
+Refer back to the mtcars data set with mpg as an outcome and weight (wt) as the predictor. About what is the ratio of the the sum of the squared errors, **∑ni=1(Yi−Y^i)2** when comparing a model with just an intercept (denominator) to the model with the intercept and slope (numerator)?
+
+```{r question_9}
+#This is simply one minus the R^2 values
+fit1 <- lm(mpg ~ wt, data = mtcars)
+1 - summary(fit1)$r.squared
+```
+
+#### Question 10
+Do the residuals always have to sum to 0 in linear regression?  
+*Answer: If an intercept is included, then they will sum to 0.*
+
