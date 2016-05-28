@@ -1,0 +1,123 @@
+---
+title: "Exploratory data analysis of the ToothGrowth Dataset"
+author: "Michael Fierro"
+date: "April 24, 2016"
+output: html_document
+---
+
+# Synopsis
+This study aims to compare the effectiveness of vitamin supplements given to a group of guinea pigs to determine which has the biggest positive effect on tooth growth. The data below shows that orange juice more effective than the vitamin supplement in small doses, but both perform equally well with doses > 2.0mg.
+
+# Data exploration
+```{r, echo=FALSE}
+library(datasets)
+library(ggplot2)
+data("ToothGrowth")
+```
+
+
+First, I want to see the columns and rows in the dataset. I use str() because this all shows the column names:
+```{r}
+str(ToothGrowth)
+```
+
+
+I also want to get a feeling for the actual data in the dataset, so I use summary() for this. The first thing that jumps out at me from the summary is that there is no data for a control group - the minimum dose is not 0, which means that *all of the test subjects got at least a dose of 0.5mg*.
+```{r}
+summary(ToothGrowth)
+```
+
+For my final step of data exploration was to create a boxplot to visually show the population data.
+```{r, echo=FALSE}
+boxplot(len ~ supp * dose, data = ToothGrowth, main = "Growth by Dose/Supplement", ylab = "Length of teeth", xlab = "Dose/Supplement", col = c("orange","red"))
+```
+
+# Confidence levels and hypothesis testing
+There are a number of different ways that this data could've been sliced, I decided to subset the data up by supplement and by dosage, and then compare the difference of the effects between the two supplements at the same dosage. R code to accomplish this is in the appendix.
+
+```{r echo=FALSE}
+vc_0.5 <- ToothGrowth$len[1:10]
+vc_1.0 <- ToothGrowth$len[11:20]
+vc_2.0 <- ToothGrowth$len[21:30]
+oj_0.5 <- ToothGrowth$len[31:40]
+oj_1.0 <- ToothGrowth$len[41:50]
+oj_2.0 <- ToothGrowth$len[51:60]
+```
+
+After data groups were assigned, hypothesis testing could be done. I decided to set the null hypothesis to be "there would be no difference in tooth length between supplements at the same dosage "
+
+With the data prepared and the null hypothesis defined, I could now use t.test() to do the actual computations, and the results per dosage are listed below.
+
+## 0.5mg dose 
+At a 0.5 mg dose, there is statistical significant difference between the two supplements. Setting alpha = 0.05, the results of t.test are:
+
+```{r echo=FALSE}
+t.test(oj_0.5, vc_0.5, paired=TRUE)
+```
+
+With a p-value of 0.015, and the confidence level (1.263, 9.236), the null hypothesis can be rejected.
+
+## 1.0 mg dose 
+At a 1.0 mg dose, there is still a significant difference between the two supplements. Again setting alpha = 0.05, the results of t.test are:
+
+```{r echo=FALSE}
+t.test(oj_1.0, vc_1.0, paired=TRUE)
+```
+
+With a p-value of 0.015, and the confidence level (1.263, 9.236), the null hypothesis can also be rejected.
+
+## 2.0 mg dose
+At a 2.0 mg dose, things change:
+
+```{r echo=FALSE}
+t.test(oj_2.0, vc_2.0, paired=TRUE)
+```
+
+With a p-value of 0.96, and a confidence level (-4.32897, 4.1689) which contains zero, the null hypothesis cannot be rejected.
+
+# Conclusions
+
+## Analysis
+As stated in the notes for the tests of each dosage, there are statistically significant differences in the mean tooth growth rate  between the supplements at dosage levels of 0.5mg and 1.0mg to reject the null hypothesis. However, at a dose of 2.0 mg, it is no longer possible to reject the null hypothesis.
+
+My final analysis of this study is that, if a dose of 0.5 mg or 1.0 mg is going to be given, the best supplement to use is orange juice. However, if a dose of 2.0mg will be administered, then the type of supplement does not necessarily matter. A further study could focus on this area.
+
+## Assumptions
+As stated earlier, there are many different ways to subset this data and many different ways to infer meaningful patterns from it. My approach assumes that there is a question about how the individual supplements work at various dosages.
+
+One major assumption that was not dressed regards control groups. As stated above, there is no data for tests done where the subjects were not given either supplement. Without this information, it is impossible to say for certain that the supplements actually work any better than a subject not getting a supplement. For this study, we are forced to assume that the supplements do lead to statistically significant increases in length.
+
+# Appendix
+## R code used for this report:
+```{r, eval=FALSE}
+library(datasets)
+library(ggplot2)
+data("ToothGrowth")
+```
+```{r, eval=FALSE}
+str(ToothGrowth)
+```
+```{r, eval=FALSE}
+summary(ToothGrowth)
+```
+```{r, eval=FALSE}
+boxplot(len ~ supp * dose, data = ToothGrowth, main = "Growth by Dose/Supplement", ylab = "Length of teeth", xlab = "Dose/Supplement", col = c("orange","red"))
+```
+```{r, eval=FALSE}
+vc_0.5 <- ToothGrowth$len[1:10]
+vc_1.0 <- ToothGrowth$len[11:20]
+vc_2.0 <- ToothGrowth$len[21:30]
+oj_0.5 <- ToothGrowth$len[31:40]
+oj_1.0 <- ToothGrowth$len[41:50]
+oj_2.0 <- ToothGrowth$len[51:60]
+```
+```{r, eval=FALSE}
+t.test(oj_0.5, vc_0.5, paired=TRUE)
+```
+```{r, eval=FALSE}
+t.test(oj_1.0, vc_1.0, paired=TRUE)
+```
+```{r, eval=FALSE}
+t.test(oj_2.0, vc_2.0, paired=TRUE)
+```
+
