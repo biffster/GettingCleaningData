@@ -1,12 +1,12 @@
 ---
-title: "Transmission type effect on MPG"
+title: "Transmission type effect on fuel efficiency"
 author: "Michael Fierro"
 date: "May 29, 2016"
-output: html_document
+output: pdf_document
 ---
 
 # Synopsis
-The purpose of this study is to determine if the type of transmission (automatic or manual) in a vehicle has an effect on it's fuel efficiency, measured in miles per gallon (mpg). After analyzing the data on hand, which included determining what variables in the experiments could confound the analysis of the results, this study has demonstrated that the type of transmission *does* effect mpg: vehicles with manual transmissions tend to average x.xx mpg fuel efficiency gain.
+The purpose of this study is to determine if the type of transmission (automatic or manual) in a vehicle has an effect on it's fuel efficiency, measured in miles per gallon (mpg). After analyzing the data on hand, which included determining what variables in the experiments could confound the analysis of the results, this study has demonstrated that the type of transmission *does* effect mpg: vehicles with manual transmissions tend to average 2.93 mpg fuel efficiency gain.
 
 # Data exploration
 ```{r, echo=FALSE}
@@ -14,25 +14,15 @@ library(datasets)
 library(ggplot2)
 data("mtcars")
 ```
-First, I wanted to see the layout of the data from the observations. I know there were a number of different variables tracked per observation, and I wanted to determine the column names along with a general summary of the data contained. summary() gives me the information I needed:
-```{r}
-summary(mtcars)
-```
-
-There was also the question of whether or not there was a visible indication of a relationship between mpg and transmission type, so I built a box chart to visualize the relationship:
-
-```{r, echo=FALSE}
-boxplot(mpg ~ factor(am), data = mtcars, main = "MPG by transmission type", ylab = "MPG", xlab = "Transmission type (0 = manual, 1 = automatic)", col = c("orange","red"))
-```
-
-This plot appears to show a definite relationship between the two, enough to justify moving forward with the study.
+Data exploration is shown in the Appendix.
 
 # Modeling
 ## Base-line modeling
 For a baseline model, I tried modeling mpg against the single variable for transmission type (an). The result was:
 ```{r echo=FALSE}
 initialFit <- lm(mpg ~ factor(am), data=mtcars)
-summary(initialFit)
+summary(initialFit)$coef
+paste("Adjusted R-Squared value:", round(summary(initialFit)$adj.r.squared,4))
 ```
 
 As you can tell, this immediately allowed rejection of the null hypothesis (that the transmission type did not effect fuel efficiency). However, this also does not account for all of the variance in the model - it's adjusted R-squared value is only 0.3385, which means it only accounts for around 34%.
@@ -44,19 +34,50 @@ There are 10 variables in the observations that could have an impact on mpg. I c
 allVariables <- lm(mpg ~ . ,data=mtcars)
 #summary(allVariables)
 bestModel <- step(allVariables, trace=FALSE)
-summary(bestModel)
-#$call
+summary(bestModel)$call
+summary(bestModel)$coef
+paste("Adjusted R-Squared value:", round(summary(bestModel)$adj.r.squared,4))
 ```
 step() determined that the following was the best model:
 lm(formula = mpg ~ wt + qsec + am, data = mtcars)
 This model shows an adjusted r-squared value of .8336
 
-There are other methods that could have been used that would've come up with a different model, and there are some extra variables that could've been added in (e.g. a variable for the relationship between qsec and hp). However, for this study, I will not address those, and have chosen the model above.
+There are other methods that could have been used that would've come up with a different model, and there are some extra variables that could've been added in (e.g. the number of cylinders, or a variable for the relationship between qsec and hp). However, for this study, I will not address those, and have chosen the model above.
 
 ## Final results
 The final results
 ```{r echo=FALSE}
 finalres <- lm(formula = mpg ~ wt + qsec + am, data = mtcars)
-summary(finalres)
+#summary(finalres)
+summary(finalres)$call
+summary(finalres)$coef
+paste("Adjusted R-Squared value:", round(summary(finalres)$adj.r.squared,4))
+
 ```
 
+From the information above, it is determined that the transmission type is significant; a manual transmission can add 2.93 mpg fuel efficiency holding wt and qsec static.
+
+# Conclusion
+As shown above, the type of transmission a vehicle has does impact fuel efficiency. Based on the model chosen here, vehicles with a manual transmission have a higher fuel efficiency, by 2.93 mpg. Other models tend to agree, though with varying results for mpg - one figure including a 1.80 mpg increase in fuel efficiency with manual transmissions.
+
+\newpage
+
+# Appendix
+## Data exploration
+First, I wanted to see the layout of the data from the observations. I know there were a number of different variables tracked per observation, and I wanted to determine the column names along with a general summary of the data contained. summary() gives me the information I needed:
+```{r}
+summary(mtcars)
+```
+
+There was also the question of whether or not there was a visible indication of a relationship between mpg and transmission type, so I built a box chart to visualize the relationship:
+
+```{r, echo=FALSE}
+boxplot(mpg ~ factor(am), data = mtcars, main = "MPG by transmission type", ylab = "MPG", xlab = "Transmission type (0 = manual, 1 = automatic)", col = c("orange","red"))
+```
+
+## Diagnostics
+```{r}
+par(mfrow = c(2,2))
+plot(finalres)
+```
+Looking at the pairs plot for the model, we find that the model fits well - Residuals are randomly scattered, Normal Q-Q plot tracks for normality, and there are no issues found on the Scale-Location nor Residuals vs Leverage plots.
