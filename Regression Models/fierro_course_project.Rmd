@@ -1,123 +1,62 @@
 ---
-title: "Exploratory data analysis of the ToothGrowth Dataset"
+title: "Transmission type effect on MPG"
 author: "Michael Fierro"
-date: "April 24, 2016"
+date: "May 29, 2016"
 output: html_document
 ---
 
 # Synopsis
-This study aims to compare the effectiveness of vitamin supplements given to a group of guinea pigs to determine which has the biggest positive effect on tooth growth. The data below shows that orange juice more effective than the vitamin supplement in small doses, but both perform equally well with doses > 2.0mg.
+The purpose of this study is to determine if the type of transmission (automatic or manual) in a vehicle has an effect on it's fuel efficiency, measured in miles per gallon (mpg). After analyzing the data on hand, which included determining what variables in the experiments could confound the analysis of the results, this study has demonstrated that the type of transmission *does* effect mpg: vehicles with manual transmissions tend to average x.xx mpg fuel efficiency gain.
 
 # Data exploration
 ```{r, echo=FALSE}
 library(datasets)
 library(ggplot2)
-data("ToothGrowth")
+data("mtcars")
 ```
-
-
-First, I want to see the columns and rows in the dataset. I use str() because this all shows the column names:
+First, I wanted to see the layout of the data from the observations. I know there were a number of different variables tracked per observation, and I wanted to determine the column names along with a general summary of the data contained. summary() gives me the information I needed:
 ```{r}
-str(ToothGrowth)
+summary(mtcars)
 ```
 
+There was also the question of whether or not there was a visible indication of a relationship between mpg and transmission type, so I built a box chart to visualize the relationship:
 
-I also want to get a feeling for the actual data in the dataset, so I use summary() for this. The first thing that jumps out at me from the summary is that there is no data for a control group - the minimum dose is not 0, which means that *all of the test subjects got at least a dose of 0.5mg*.
-```{r}
-summary(ToothGrowth)
-```
-
-For my final step of data exploration was to create a boxplot to visually show the population data.
 ```{r, echo=FALSE}
-boxplot(len ~ supp * dose, data = ToothGrowth, main = "Growth by Dose/Supplement", ylab = "Length of teeth", xlab = "Dose/Supplement", col = c("orange","red"))
+boxplot(mpg ~ factor(am), data = mtcars, main = "MPG by transmission type", ylab = "MPG", xlab = "Transmission type (0 = manual, 1 = automatic)", col = c("orange","red"))
 ```
 
-# Confidence levels and hypothesis testing
-There are a number of different ways that this data could've been sliced, I decided to subset the data up by supplement and by dosage, and then compare the difference of the effects between the two supplements at the same dosage. R code to accomplish this is in the appendix.
+This plot appears to show a definite relationship between the two, enough to justify moving forward with the study.
+
+# Modeling
+## Base-line modeling
+For a baseline model, I tried modeling mpg against the single variable for transmission type (an). The result was:
+```{r echo=FALSE}
+initialFit <- lm(mpg ~ factor(am), data=mtcars)
+summary(initialFit)
+```
+
+As you can tell, this immediately allowed rejection of the null hypothesis (that the transmission type did not effect fuel efficiency). However, this also does not account for all of the variance in the model - it's adjusted R-squared value is only 0.3385, which means it only accounts for around 34%.
+
+## Best model
+There are 10 variables in the observations that could have an impact on mpg. I could have manually gone through the steps of reducing the variables until I found the best model, but instead I used R's step() function to do this for me:
 
 ```{r echo=FALSE}
-vc_0.5 <- ToothGrowth$len[1:10]
-vc_1.0 <- ToothGrowth$len[11:20]
-vc_2.0 <- ToothGrowth$len[21:30]
-oj_0.5 <- ToothGrowth$len[31:40]
-oj_1.0 <- ToothGrowth$len[41:50]
-oj_2.0 <- ToothGrowth$len[51:60]
+allVariables <- lm(mpg ~ . ,data=mtcars)
+#summary(allVariables)
+bestModel <- step(allVariables, trace=FALSE)
+summary(bestModel)
+#$call
 ```
+step() determined that the following was the best model:
+lm(formula = mpg ~ wt + qsec + am, data = mtcars)
+This model shows an adjusted r-squared value of .8336
 
-After data groups were assigned, hypothesis testing could be done. I decided to set the null hypothesis to be "there would be no difference in tooth length between supplements at the same dosage "
+There are other methods that could have been used that would've come up with a different model, and there are some extra variables that could've been added in (e.g. a variable for the relationship between qsec and hp). However, for this study, I will not address those, and have chosen the model above.
 
-With the data prepared and the null hypothesis defined, I could now use t.test() to do the actual computations, and the results per dosage are listed below.
-
-## 0.5mg dose 
-At a 0.5 mg dose, there is statistical significant difference between the two supplements. Setting alpha = 0.05, the results of t.test are:
-
+## Final results
+The final results
 ```{r echo=FALSE}
-t.test(oj_0.5, vc_0.5, paired=TRUE)
-```
-
-With a p-value of 0.015, and the confidence level (1.263, 9.236), the null hypothesis can be rejected.
-
-## 1.0 mg dose 
-At a 1.0 mg dose, there is still a significant difference between the two supplements. Again setting alpha = 0.05, the results of t.test are:
-
-```{r echo=FALSE}
-t.test(oj_1.0, vc_1.0, paired=TRUE)
-```
-
-With a p-value of 0.015, and the confidence level (1.263, 9.236), the null hypothesis can also be rejected.
-
-## 2.0 mg dose
-At a 2.0 mg dose, things change:
-
-```{r echo=FALSE}
-t.test(oj_2.0, vc_2.0, paired=TRUE)
-```
-
-With a p-value of 0.96, and a confidence level (-4.32897, 4.1689) which contains zero, the null hypothesis cannot be rejected.
-
-# Conclusions
-
-## Analysis
-As stated in the notes for the tests of each dosage, there are statistically significant differences in the mean tooth growth rate  between the supplements at dosage levels of 0.5mg and 1.0mg to reject the null hypothesis. However, at a dose of 2.0 mg, it is no longer possible to reject the null hypothesis.
-
-My final analysis of this study is that, if a dose of 0.5 mg or 1.0 mg is going to be given, the best supplement to use is orange juice. However, if a dose of 2.0mg will be administered, then the type of supplement does not necessarily matter. A further study could focus on this area.
-
-## Assumptions
-As stated earlier, there are many different ways to subset this data and many different ways to infer meaningful patterns from it. My approach assumes that there is a question about how the individual supplements work at various dosages.
-
-One major assumption that was not dressed regards control groups. As stated above, there is no data for tests done where the subjects were not given either supplement. Without this information, it is impossible to say for certain that the supplements actually work any better than a subject not getting a supplement. For this study, we are forced to assume that the supplements do lead to statistically significant increases in length.
-
-# Appendix
-## R code used for this report:
-```{r, eval=FALSE}
-library(datasets)
-library(ggplot2)
-data("ToothGrowth")
-```
-```{r, eval=FALSE}
-str(ToothGrowth)
-```
-```{r, eval=FALSE}
-summary(ToothGrowth)
-```
-```{r, eval=FALSE}
-boxplot(len ~ supp * dose, data = ToothGrowth, main = "Growth by Dose/Supplement", ylab = "Length of teeth", xlab = "Dose/Supplement", col = c("orange","red"))
-```
-```{r, eval=FALSE}
-vc_0.5 <- ToothGrowth$len[1:10]
-vc_1.0 <- ToothGrowth$len[11:20]
-vc_2.0 <- ToothGrowth$len[21:30]
-oj_0.5 <- ToothGrowth$len[31:40]
-oj_1.0 <- ToothGrowth$len[41:50]
-oj_2.0 <- ToothGrowth$len[51:60]
-```
-```{r, eval=FALSE}
-t.test(oj_0.5, vc_0.5, paired=TRUE)
-```
-```{r, eval=FALSE}
-t.test(oj_1.0, vc_1.0, paired=TRUE)
-```
-```{r, eval=FALSE}
-t.test(oj_2.0, vc_2.0, paired=TRUE)
+finalres <- lm(formula = mpg ~ wt + qsec + am, data = mtcars)
+summary(finalres)
 ```
 
